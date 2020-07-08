@@ -38,13 +38,15 @@ public class GlobalCommentBuilder extends AbstractCommentBuilder {
     private final String author;
     private final QualityGate qualityGate;
     private final Reporter reporter;
+    private final String sonarPRUrl;
 
-    public GlobalCommentBuilder(GitLabPluginConfiguration gitLabPluginConfiguration, String author, QualityGate qualityGate, Reporter reporter, MarkDownUtils markDownUtils) {
+    public GlobalCommentBuilder(GitLabPluginConfiguration gitLabPluginConfiguration, String author, QualityGate qualityGate, Reporter reporter, MarkDownUtils markDownUtils, string sonarPRUrl) {
         super(gitLabPluginConfiguration, gitLabPluginConfiguration.commitSHA().get(0), reporter.getReportIssues(), markDownUtils, "global", gitLabPluginConfiguration.globalTemplate());
 
         this.author = author;
         this.qualityGate = qualityGate;
         this.reporter = reporter;
+        this.sonarPRUrl = sonarPRUrl;
     }
 
     @Override
@@ -80,7 +82,8 @@ public class GlobalCommentBuilder extends AbstractCommentBuilder {
 
     private void appendQualityGate(StringBuilder sb) {
         if (qualityGate != null) {
-            sb.append("SonarQube analysis indicates that quality gate is ").append(toStatusText(qualityGate.getStatus())).append(".\n");
+            sb.append("[SonarQube]").append("(").append(sonarPRUrl).append(")")
+                .append(" analysis indicates that quality gate is ").append(toStatusText(qualityGate.getStatus())).append(".\n");
 
             if (qualityGate.getConditions() != null) {
                 qualityGate.getConditions().forEach(c -> appendCondition(sb, c));
@@ -117,11 +120,13 @@ public class GlobalCommentBuilder extends AbstractCommentBuilder {
     private void appendIssues(StringBuilder sb) {
         int newIssues = reporter.getIssueCount();
         if (newIssues == 0) {
-            sb.append("SonarQube analysis reported no issues.\n");
+            sb.append("[SonarQube]").append("(").append(sonarPRUrl).append(")")
+                .append(" analysis reported no issues.\n");
         } else {
             boolean hasInlineIssues = newIssues > reporter.getNotReportedIssueCount();
             boolean extraIssuesTruncated = reporter.getNotReportedIssueCount() > gitLabPluginConfiguration.maxGlobalIssues();
-            sb.append("SonarQube analysis reported ").append(newIssues).append(" issue").append(newIssues > 1 ? "s" : "").append("\n");
+            sb.append("[SonarQube]").append("(").append(sonarPRUrl).append(")")
+                .append(" analysis reported ").append(newIssues).append(" issue").append(newIssues > 1 ? "s" : "").append("\n");
 
             appendSummaryBySeverity(sb);
 

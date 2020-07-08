@@ -192,9 +192,23 @@ public class ReporterBuilder {
 
     private void updateGlobalComments(QualityGate qualityGate, Reporter report) {
         String username = commitFacade.getUsernameForRevision(gitLabPluginConfiguration.commitSHA().get(0));
-        String body = new GlobalCommentBuilder(gitLabPluginConfiguration, username, qualityGate, report, markDownUtils).buildForMarkdown();
+        String body = new GlobalCommentBuilder(gitLabPluginConfiguration, username, qualityGate, report, markDownUtils, getSonarPRUrl()).buildForMarkdown();
         if (body != null && !body.trim().isEmpty()) {
             commitFacade.addGlobalComment(body);
         }
+    }
+
+    private String getSonarPRUrl() {
+        StringBuilder sb = new StringBuilder();
+        String url = gitLabPluginConfiguration.baseUrl();
+        sb.append(url);
+        if (url.substring(url.length() - 1) != "/") {
+            sb.append("/");
+        }
+        sb.append("dashboard?id=");
+        sb.append(sonarFacade.getProjectKey());
+        sb.append("&pullRequest=");
+        sb.append(gitLabPluginConfiguration.mergeRequestIid());
+        return sb.toString();
     }
 }

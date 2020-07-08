@@ -40,7 +40,7 @@ public class GlobalCommentBuilder extends AbstractCommentBuilder {
     private final Reporter reporter;
     private final String sonarPRUrl;
 
-    public GlobalCommentBuilder(GitLabPluginConfiguration gitLabPluginConfiguration, String author, QualityGate qualityGate, Reporter reporter, MarkDownUtils markDownUtils, string sonarPRUrl) {
+    public GlobalCommentBuilder(GitLabPluginConfiguration gitLabPluginConfiguration, String author, QualityGate qualityGate, Reporter reporter, MarkDownUtils markDownUtils, String sonarPRUrl) {
         super(gitLabPluginConfiguration, gitLabPluginConfiguration.commitSHA().get(0), reporter.getReportIssues(), markDownUtils, "global", gitLabPluginConfiguration.globalTemplate());
 
         this.author = author;

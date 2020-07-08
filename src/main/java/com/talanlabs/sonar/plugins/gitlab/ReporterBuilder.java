@@ -202,7 +202,7 @@ public class ReporterBuilder {
         StringBuilder sb = new StringBuilder();
         String url = gitLabPluginConfiguration.baseUrl();
         sb.append(url);
-        if (url.substring(url.length() - 1) != "/") {
+        if (!url.endsWith("/")) {
             sb.append("/");
         }
         sb.append("dashboard?id=");
